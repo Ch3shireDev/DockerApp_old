@@ -7,29 +7,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Copy single file to remote
+        
+      - name: create dist
+        run: |
+          mkdir dist
+        
+      - name: build angular
+        run: |
+          docker build ./ClientApp -t angular
+        
+      - name: save angular
+        run: |
+          docker save -o ./dist/angular.tar angular
+          
+      - name: copy folder to remote
         uses: garygrossgarten/github-action-scp@release
         with:
-          local: docker-compose.yml
-          remote: ./docker-compose.yml
+          local: dist
+          remote: ./dist
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           password: ${{ secrets.REMOTE_PASSWORD }}
-
-#       - name: Install SSH key
-#         uses: shimataro/ssh-key-action@v2
-#         with:
-#           key: ${{ secrets.SSH_PRIVATE_KEY }}
-#           name: id_pub
-#           known_hosts: ${{ secrets.REMOTE_HOST }}
-#           config: |
-#             PasswordAuthentication yes
-
-#       - name: build angular
-#         run: |
-#           docker build ./ClientApp -t angular
-
-#       - name: save angular
-#         run: |
-#           docker save -o angular.tar angular
           
+      - name: remove local folder
+        run: |
+           rm -rf ./dist
+           
+      - name: run script on server
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: ./deploy.sh
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
