@@ -8,5 +8,5 @@ jobs:
     steps:
       - name: build angular
         run: |
-          docker build ClientApp -t angular
+          docker build ./ClientApp -t angular
     # - name: pack angular
