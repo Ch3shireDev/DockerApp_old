@@ -10,4 +10,14 @@ jobs:
       - name: build angular
         run: |
           docker build ./ClientApp -t angular
-    # - name: pack angular
+      - name: save angular
+        run: |
+           docker save -o angular.tar angular
+      - name: send angular
+      - uses: garygrossgarten/github-action-scp@release
+        with:
+          local: angular.tar
+          remote: ./
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.PASSWORD }}
