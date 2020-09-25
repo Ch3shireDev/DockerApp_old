@@ -25,7 +25,8 @@ jobs:
 #           docker save -o angular.tar angular
           
       - name: rsync over ssh
-        run: rsync ./docker-compose.yml root@remote:~/
+        run: | 
+          scp ./docker-compose.yml root@zadania.org.pl:~/
 #       - name: send
 #         uses: garygrossgarten/github-action-scp@release
 #         with:
