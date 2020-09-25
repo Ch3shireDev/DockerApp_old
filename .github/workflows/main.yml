@@ -14,6 +14,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           name: id_pub
           known_hosts: ${{ secrets.REMOTE_HOST }}
+          config: |
+            PasswordAuthentication yes
 
 #       - name: build angular
 #         run: |
