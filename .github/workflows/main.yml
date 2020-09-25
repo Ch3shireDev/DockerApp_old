@@ -7,6 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          known_hosts: ${{ secrets.REMOTE_HOST }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
       - name: build angular
         run: |
           docker build ./ClientApp -t angular
@@ -15,13 +22,6 @@ jobs:
         run: |
           docker save -o angular.tar angular
           
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_KEY }}
-          name: id_rsa # optional
-          known_hosts: ${{ secrets.REMOTE_HOST }}
-
       - name: rsync over ssh
         run: rsync angular.tar docker-compose.yml root@remote:~/
 #       - name: send
