@@ -15,8 +15,6 @@ jobs:
           name: id_pub
           known_hosts: ${{ secrets.REMOTE_HOST }}
   
-      
-  
 #       - name: build angular
 #         run: |
 #           docker build ./ClientApp -t angular
