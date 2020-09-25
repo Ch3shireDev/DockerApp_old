@@ -14,12 +14,21 @@ jobs:
       - name: save angular
         run: |
           docker save -o angular.tar angular
-
-      - name: send angular
-        uses: garygrossgarten/github-action-scp@release
+          
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
         with:
-          local: angular.tar
-          remote: ./
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.PASSWORD }}
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa # optional
+          known_hosts: ${{ secrets.REMOTE_HOST }}
+
+      - name: rsync over ssh
+        run: rsync angular.tar docker-compose.yml root@remote:~/
+#       - name: send
+#         uses: garygrossgarten/github-action-scp@release
+#         with:
+#           local: angular.tar docker-compose.yml
+#           remote: ./
+#           host: ${{ secrets.REMOTE_HOST }}
+#           username: ${{ secrets.SSH_USER }}
+#           password: ${{ secrets.PASSWORD }}
