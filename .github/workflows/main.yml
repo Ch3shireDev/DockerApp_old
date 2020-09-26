@@ -6,46 +6,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # - uses: actions/checkout@v2
-      - name: executing remote ssh commands using password
+      - name: git pull from ssh
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           password: ${{ secrets.REMOTE_PASSWORD }}
           port: 22
-          script: git pull https://github.com/Ch3shireDev/DockerApp.git
-
-      # - name: create dist
-      #   run: |
-      #     mkdir dist
-        
-      # - name: build angular
-      #   run: |
-      #     docker build ./ClientApp -t angular
-        
-      # - name: save angular
-      #   run: |
-      #     docker save -o ./dist/angular.tar angular
-          
-      # - name: copy folder to remote
-      #   uses: garygrossgarten/github-action-scp@release
-      #   with:
-      #     local: dist
-      #     remote: ./dist
-      #     host: ${{ secrets.REMOTE_HOST }}
-      #     username: ${{ secrets.REMOTE_USER }}
-      #     password: ${{ secrets.REMOTE_PASSWORD }}
-          
-      # - name: remove local folder
-      #   run: |
-      #      rm -rf ./dist
-           
-      # - name: run script on server
-      #   uses: garygrossgarten/github-action-ssh@release
-      #   with:
-      #     command: ./deploy.sh
-      #     host: ${{ secrets.REMOTE_HOST }}
-      #     username: ${{ secrets.REMOTE_USER }}
-      #     password: ${{ secrets.REMOTE_PASSWORD }}
-
+          script: cd DockerApp && git fetch && git reset origin/master --hard && docker-compose build && docker-compose up -d
