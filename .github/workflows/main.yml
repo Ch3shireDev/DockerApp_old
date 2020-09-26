@@ -7,21 +7,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        
+      - name: create dist
+        run: |
+          mkdir dist
+        
       - name: build angular
         run: |
           docker build ./ClientApp -t angular
-
+        
       - name: save angular
         run: |
-          docker save -o angular.tar angular
-
-
-  send:
-      - uses: garygrossgarten/github-action-scp@release
-      - name: send angular
+          docker save -o ./dist/angular.tar angular
+          
+      - name: copy folder to remote
+        uses: garygrossgarten/github-action-scp@release
         with:
-          local: angular.tar
-          remote: ./
+          local: dist
+          remote: ./dist
           host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.PASSWORD }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          
+      - name: remove local folder
+        run: |
+           rm -rf ./dist
+           
+      - name: run script on server
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: ./deploy.sh
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
