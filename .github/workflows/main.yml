@@ -6,7 +6,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: build angular
         run: |
           docker build ./ClientApp -t angular
-    # - name: pack angular
+
+      - name: save angular
+        run: |
+          docker save -o angular.tar angular
+
+
+  send:
+      - uses: garygrossgarten/github-action-scp@release
+      - name: send angular
+        with:
+          local: angular.tar
+          remote: ./
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.PASSWORD }}
